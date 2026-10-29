@@ -1,0 +1,23 @@
+# R session state and local RStudio settings
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+Rplots.pdf
+
+# Generated data and implementation outputs
+/data/processed/**
+!/data/processed/**/
+!/data/processed/**/.gitkeep
+/outputs/**
+!/outputs/**/
+!/outputs/**/.gitkeep
+
+# Final PDF exports and packages
+/submission/*
+!/submission/README.md
+
+# Operating system and editor files
+Thumbs.db
+.DS_Store
+*.swp

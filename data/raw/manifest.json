@@ -1,0 +1,62 @@
+{
+  "source_archive": "Data-20261030.zip",
+  "source_archive_note": "Original assignment distribution; archive not duplicated in this repository.",
+  "source_archive_sha256": "51b8185a089475527a7d2ff361d5df377e48969aa7f61d1eaa37acacb23cc4b2",
+  "description": "Original Q1 registration lists, preserving the initial repository commit bytes (LF line endings). The source ZIP uses CRLF; student identifiers are unchanged.",
+  "files": [
+    {
+      "archive_entry": "Q1/Q1_CCS592.txt",
+      "path": "data/raw/q1/Q1_CCS592.txt",
+      "bytes": 342,
+      "sha256": "874338c9f6f8b3a34a7c4f66aaf32025f92de16ce6d6b583cc6c2e92b51f7ae4",
+      "raw_rows": 38,
+      "blank_rows": 0,
+      "exact_duplicate_rows": 0
+    },
+    {
+      "archive_entry": "Q1/Q1_CDS501.txt",
+      "path": "data/raw/q1/Q1_CDS501.txt",
+      "bytes": 486,
+      "sha256": "ff6a1f1ae1e0f02b8aab558fd42ddeb934d5ee820c54d963251123adf1b6f9c1",
+      "raw_rows": 54,
+      "blank_rows": 0,
+      "exact_duplicate_rows": 0
+    },
+    {
+      "archive_entry": "Q1/Q1_CDS506.txt",
+      "path": "data/raw/q1/Q1_CDS506.txt",
+      "bytes": 321,
+      "sha256": "eeae6ed358d5f39c1c1d950ecca7a4a50a8daefac631558ebfd558dc0fb13763",
+      "raw_rows": 38,
+      "blank_rows": 0,
+      "exact_duplicate_rows": 0
+    },
+    {
+      "archive_entry": "Q1/Q1_CDS512.txt",
+      "path": "data/raw/q1/Q1_CDS512.txt",
+      "bytes": 512,
+      "sha256": "19be44f14f9c0676a2097a66a64936ad19db46c182b0095c1d7796e21bd28bf4",
+      "raw_rows": 64,
+      "blank_rows": 0,
+      "exact_duplicate_rows": 0
+    },
+    {
+      "archive_entry": "Q1/Q1_CDS521.txt",
+      "path": "data/raw/q1/Q1_CDS521.txt",
+      "bytes": 513,
+      "sha256": "413ba1066f89a6bc9ca8063f76aeec2011cd635a19413960edda62bef30317ef",
+      "raw_rows": 66,
+      "blank_rows": 0,
+      "exact_duplicate_rows": 1
+    },
+    {
+      "archive_entry": "Q1/Q1_CDS523.txt",
+      "path": "data/raw/q1/Q1_CDS523.txt",
+      "bytes": 44,
+      "sha256": "0c1a921da7f48492f45ec821571812403259866c5d5e596bcc1606d5c1d89863",
+      "raw_rows": 6,
+      "blank_rows": 0,
+      "exact_duplicate_rows": 0
+    }
+  ]
+}

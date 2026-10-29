@@ -1,0 +1,11 @@
+# Consistent source line endings across Windows, macOS, and Linux.
+* text=auto eol=lf
+
+# Preserve supplied raw data exactly as recorded in the manifest.
+/data/raw/** -text whitespace=cr-at-eol
+/data/raw/manifest.json text eol=lf
+
+# Binary assets must never undergo line-ending conversion.
+*.pdf binary
+*.zip binary
+*.png binary
