@@ -2,45 +2,27 @@
 
 USM CPC351/CPM351 Principles of Data Analytics, Semester 1, 2026/2027.
 
-R project scaffold for exam scheduling (Q1) and delivery routing (Q2).
-The baseline inventories Q1 inputs and checks Q2 CSV column names;
-the assignment algorithms are still pending.
+This R assignment processes the Q1 registration lists and Q2 travel logs. The runnable scripts and supplied inputs are together in `assignment_files/`; generated results are written to `outputs/`.
 
 ## Project links
 
-- [Assignment brief](S261_CPC351_Assignment_01_v01.pdf)
 - [Shared Drive](https://drive.google.com/drive/u/0/folders/19dXocKj3UaWQLkAHBNtxY1Q45Rxe5zI_)
 - [Google Docs report](https://docs.google.com/document/d/1GAB7_rqw0hhjneBch7KhtM-GNt_AlFTzSP1gphYUyOE/edit?usp=drive_link)
 
-## Structure
-
-| Location | Contents |
-| --- | --- |
-| `code/` | Runner, shared helpers, Q1/Q2 modules, and learning examples |
-| `data/raw/` | Original inputs and file hashes |
-| `data/synthetic/` | Clearly labeled development-only inputs |
-| `data/processed/` | Generated cleaned data |
-| `outputs/` | Generated tables, schedules, routes, and figures |
-| `submission/` | Final PDF export and assignment package |
-
-Generated outputs and submission artifacts are ignored by Git. Synthetic
-development inputs are kept separate from raw and grading data.
-
 ## Run
 
-Install R and run from the repository root. Only base R is required.
-For RStudio, open `CPC351-Assignment-1.Rproj`.
+Install R. Open `CPC351-Assignment-1.Rproj` in RStudio, or run from the assignment folder:
 
 ```sh
-Rscript code/run.R
-Rscript code/run.R q1
-Rscript code/run.R q2
-Rscript code/run.R q2 "path/to/ahmad_travel_logs.csv"
+Rscript assignment_files/run_assignment.R
 ```
 
-The default runs both questions. Q1 writes `outputs/q1/input_inventory.csv`.
-Q2 skips when its input CSV is absent; no Q2 dataset is supplied.
+The runner processes Q1 and Q2. Q1 writes an input inventory to `outputs/q1/`. For Q2, place the provided grading file beside the scripts and name it `ahmad_travel_logs.csv`. The included `ahmad_travel_logs_synthetic.csv` is development data; run it explicitly with:
 
-See the [Q1 plan](code/q1/README.md), [Q2 plan](code/q2/README.md),
-[data notes](data/README.md), and [submission guide](submission/README.md).
-Agent guidance is in [AGENTS.md](AGENTS.md).
+```sh
+Rscript assignment_files/run_assignment.R q2 assignment_files/ahmad_travel_logs_synthetic.csv
+```
+
+Q2 matrices, routes, plots, and filtered logs are written to `outputs/q2/`. The `assignment_files/` folder is self-contained for scripts and inputs.
+
+For packaging guidance, see the [submission guide](submission/README.md).
