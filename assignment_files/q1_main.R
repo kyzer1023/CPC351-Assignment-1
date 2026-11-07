@@ -1,46 +1,50 @@
-# Q1 baseline: read supplied registrations and describe the untouched inputs.
+# Q1 pipeline: clean registrations, construct the conflict matrix, and schedule.
 
-read_q1_registration_lists <- function(project_root) {
-  input_directory <- file.path(project_root, "assignment_files")
-  files <- sort(list.files(input_directory, pattern = "^Q1_[[:alnum:]]+\\.txt$",
-                          full.names = TRUE))
-  course_codes <- sub("^Q1_(.+)\\.txt$", "\\1", basename(files))
-  expected_courses <- c("CCS592", "CDS501", "CDS506", "CDS512", "CDS521", "CDS523")
-
-  if (!setequal(course_codes, expected_courses)) {
-    stop("Q1 requires the six supplied registration lists in assignment_files/.",
-         call. = FALSE)
-  }
-
-  registrations <- lapply(files, function(path) {
-    readLines(path, warn = FALSE, encoding = "UTF-8")
-  })
-  names(registrations) <- course_codes
-  registrations
+if (!exists("q1_find_project_root", mode = "function")) {
+  source(file.path("assignment_files", "q1_clean.R"), local = TRUE)
+  source(file.path("assignment_files", "q1_conflict.R"), local = TRUE)
+  source(file.path("assignment_files", "q1_schedule.R"), local = TRUE)
 }
 
-inspect_q1_inputs <- function(project_root) {
+run_q1_pipeline <- function(project_root = q1_find_project_root(), verbose = TRUE) {
   registrations <- read_q1_registration_lists(project_root)
-  course_codes <- names(registrations)
+  cleaning <- clean_q1_registrations(registrations)
+  write_q1_cleaning_outputs(cleaning, project_root)
 
-  inventory <- data.frame(
-    course = course_codes,
-    file = paste0("assignment_files/Q1_", course_codes, ".txt"),
-    raw_rows = vapply(registrations, length, integer(1)),
-    blank_rows = vapply(registrations, function(rows) {
-      as.integer(sum(!nzchar(trimws(rows))))
-    }, integer(1)),
-    exact_duplicate_rows = vapply(registrations, function(rows) {
-      as.integer(sum(duplicated(rows)))
-    }, integer(1)),
-    row.names = NULL,
-    stringsAsFactors = FALSE
-  )
+  conflict_matrix <- build_q1_conflict_matrix(cleaning$courses)
+  pair_summary <- write_q1_conflict_outputs(conflict_matrix, project_root)
 
-  destination <- file.path(project_root, "outputs", "q1", "input_inventory.csv")
-  write_output_csv(inventory, destination)
-  message("Q1: raw input inventory written to ", destination)
-  message("Q1: identifiers are unchanged; cleaning and scheduling are pending.")
+  schedule <- generate_q1_timetable(cleaning$courses, conflict_matrix)
+  validation <- write_q1_timetable_outputs(schedule, project_root)
 
-  invisible(list(registrations = registrations, inventory = inventory))
+  if (isTRUE(verbose)) {
+    cat("Q1 cleaning audit:\n")
+    print(cleaning$audit, row.names = FALSE)
+    cat("\nQ1 conflict matrix (shared students):\n")
+    print(conflict_matrix)
+    cat("\nQ1 timetable before the back-to-back constraint:\n")
+    cat("Concurrent-conflict timetable (extended if eight slots are insufficient):\n")
+    print(schedule$initial_timetable, row.names = FALSE)
+    cat("\nUpdated timetable with no same-day shared-student examinations:\n")
+    print(schedule$timetable, row.names = FALSE)
+    message("Q1(c): the original eight slots are ",
+            if (schedule$original_eight_slots_sufficient) "sufficient" else "insufficient",
+            " for concurrent-conflict and capacity constraints.")
+    message("Q1(d): the updated no-back-to-back timetable requires ",
+            schedule$minimum_days, " days.")
+    message("Q1: outputs written under outputs/q1/.")
+  }
+
+  invisible(list(
+    cleaning = cleaning,
+    conflict_matrix = conflict_matrix,
+    conflict_pairs = pair_summary,
+    schedule = schedule,
+    validation = validation
+  ))
+}
+
+if (sys.nframe() == 0L) {
+  root <- q1_find_project_root()
+  result <- run_q1_pipeline(root)
 }
