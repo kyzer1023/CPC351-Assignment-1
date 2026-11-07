@@ -3,7 +3,7 @@
 ## Supplied Question 1 data
 
 The original distribution archive, `Data-20261030.zip`, contains six registration
-lists under its `Q1/` directory. They are stored in `data/raw/q1/` and match
+lists under its `Q1/` directory. They are stored in `assignment_files/` and match
 that archive's contents apart from line endings. The ZIP is not duplicated in
 Git; the extracted inputs are sufficient to run the project.
 
@@ -14,12 +14,12 @@ not been edited.
 
 | Course | File | Raw rows | Exact duplicate rows |
 | --- | --- | ---: | ---: |
-| CCS592 | `raw/q1/Q1_CCS592.txt` | 38 | 0 |
-| CDS501 | `raw/q1/Q1_CDS501.txt` | 54 | 0 |
-| CDS506 | `raw/q1/Q1_CDS506.txt` | 38 | 0 |
-| CDS512 | `raw/q1/Q1_CDS512.txt` | 64 | 0 |
-| CDS521 | `raw/q1/Q1_CDS521.txt` | 66 | 1 |
-| CDS523 | `raw/q1/Q1_CDS523.txt` | 6 | 0 |
+| CCS592 | `Q1_CCS592.txt` | 38 | 0 |
+| CDS501 | `Q1_CDS501.txt` | 54 | 0 |
+| CDS506 | `Q1_CDS506.txt` | 38 | 0 |
+| CDS512 | `Q1_CDS512.txt` | 64 | 0 |
+| CDS521 | `Q1_CDS521.txt` | 66 | 1 |
+| CDS523 | `Q1_CDS523.txt` | 6 | 0 |
 
 These are raw row counts, not cleaned student counts. In CDS521, `NAME029`
 appears twice. Other observed inconsistencies include hyphens, underscores,
@@ -33,7 +33,7 @@ against this manifest if the integrity of a raw file is in doubt.
 ## Question 2 input
 
 No Q2 dataset is supplied. The default future input path is
-`data/raw/q2/ahmad_travel_logs.csv`; the R runner also accepts an explicit path.
+`assignment_files/ahmad_travel_logs.csv`; the R runner also accepts an explicit path.
 The assignment defines these columns:
 
 | Column | Expected meaning |
@@ -52,7 +52,7 @@ Synthetic development data must be identified as synthetic and kept separate
 from any supplied or grading data.
 
 The Q2(a) prototype's synthetic development CSV is
-`data/synthetic/q2/ahmad_travel_logs.csv`. It contains eight records for each
+`assignment_files/ahmad_travel_logs_synthetic.csv`. It contains eight records for each
 directed route under all combinations of Clear, Rainy, and Storm weather and
 Morning, Afternoon, and Evening. P3 to P8 is intentionally blocked during Rainy
 Morning: its eight records contain only `NA` and `-1`, so the prototype assigns
@@ -61,7 +61,7 @@ an unlisted origin coordinate to demonstrate that such rows are removed before
 aggregation. This is a demonstration case, not a supplied or grading dataset.
 
 The prototype writes its cleaned synthetic rows to
-`data/processed/q2/ahmad_travel_logs_filtered.csv`. This file contains only
+`data/processed/q2/synthetic_ahmad_travel_logs_filtered.csv`. This file contains only
 Rainy Morning records with listed endpoints and valid, non-negative travel
 times; generated processed data is ignored by Git.
 

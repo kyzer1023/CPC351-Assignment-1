@@ -1,4 +1,4 @@
-# Main assignment runner. Usage: Rscript code/run.R [all|q1|q2] [travel_csv]
+# Main assignment runner. Usage: Rscript assignment_files/run_assignment.R [all|q1|q2] [travel_csv]
 
 locate_project_root <- function() {
   file_argument <- grep("^--file=", commandArgs(), value = TRUE)
@@ -13,7 +13,7 @@ locate_project_root <- function() {
     candidate <- normalizePath(start, winslash = "/", mustWork = TRUE)
     repeat {
       if (file.exists(file.path(candidate, "CPC351-Assignment-1.Rproj")) &&
-          file.exists(file.path(candidate, "code", "run.R"))) {
+          file.exists(file.path(candidate, "assignment_files", "run_assignment.R"))) {
         return(candidate)
       }
 
@@ -23,28 +23,28 @@ locate_project_root <- function() {
     }
   }
 
-  stop("Cannot find the project root. Open the .Rproj file or run code/run.R by its path.",
+  stop("Cannot find the project root. Open the .Rproj file or run assignment_files/run_assignment.R by its path.",
        call. = FALSE)
 }
 
 project_root <- locate_project_root()
-source(file.path(project_root, "code", "common", "io.R"), local = TRUE)
-source(file.path(project_root, "code", "q1", "main.R"), local = TRUE)
-source(file.path(project_root, "code", "q2", "main.R"), local = TRUE)
+source(file.path(project_root, "assignment_files", "shared_io.R"), local = TRUE)
+source(file.path(project_root, "assignment_files", "q1_main.R"), local = TRUE)
+source(file.path(project_root, "assignment_files", "q2_main.R"), local = TRUE)
 
 arguments <- commandArgs(trailingOnly = TRUE)
 mode <- if (length(arguments) == 0L) "all" else tolower(arguments[[1L]])
 
 if (!mode %in% c("all", "q1", "q2") || length(arguments) > 2L ||
     (mode == "q1" && length(arguments) > 1L)) {
-  stop("Usage: Rscript code/run.R [all|q1|q2] [travel_csv]", call. = FALSE)
+  stop("Usage: Rscript assignment_files/run_assignment.R [all|q1|q2] [travel_csv]", call. = FALSE)
 }
 
 is_explicit_q2_csv <- length(arguments) == 2L
 travel_csv <- if (is_explicit_q2_csv) {
   path.expand(arguments[[2L]])
 } else {
-  file.path(project_root, "data", "raw", "q2", "ahmad_travel_logs.csv")
+  file.path(project_root, "assignment_files", "ahmad_travel_logs.csv")
 }
 
 message("Running assignment pipeline.")

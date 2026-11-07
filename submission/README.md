@@ -17,8 +17,8 @@ Before packaging:
    a short run guide; preserve the relative paths needed by the runner.
 
 The final archive must be self-contained. If using the current runner, include
-`CPC351-Assignment-1.Rproj`, `code/`, and the needed `data/` files so that
-`Rscript code/run.R` works after extraction. Keep the working report in Google
+`CPC351-Assignment-1.Rproj` and the complete `assignment_files/` folder so that
+`Rscript assignment_files/run_assignment.R` works after extraction. Keep the working report in Google
 Docs; the submission contains its exported PDF.
 
 Use the [shared Drive folder](https://drive.google.com/drive/u/0/folders/19dXocKj3UaWQLkAHBNtxY1Q45Rxe5zI_)

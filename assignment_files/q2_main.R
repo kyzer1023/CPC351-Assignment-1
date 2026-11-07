@@ -10,12 +10,12 @@ load_q2_modules <- function(project_root = NULL) {
   load_single <- function(filename) {
     candidates <- character(0)
     if (!is.null(project_root)) {
-      candidates <- c(candidates, file.path(project_root, "code", "q2", filename))
+      candidates <- c(candidates, file.path(project_root, "assignment_files", filename))
     }
-    candidates <- c(candidates, file.path("code", "q2", filename), filename)
+    candidates <- c(candidates, file.path("assignment_files", filename), filename)
     existing <- candidates[file.exists(candidates)]
     if (length(existing) == 0L) {
-      stop("Cannot locate code/q2/", filename, call. = FALSE)
+      stop("Cannot locate assignment_files/", filename, call. = FALSE)
     }
     source(existing[[1L]], local = parent.frame(2L))
   }
@@ -71,7 +71,7 @@ inspect_q2_inputs <- function(project_root,
                               verbose = TRUE) {
   load_q2_modules(project_root)
 
-  default_path <- file.path(project_root, "data", "raw", "q2", "ahmad_travel_logs.csv")
+  default_path <- file.path(project_root, "assignment_files", "ahmad_travel_logs.csv")
   if (is.null(is_explicit)) {
     is_explicit <- !identical(
       normalizePath(input_path, winslash = "/", mustWork = FALSE),
@@ -85,7 +85,7 @@ inspect_q2_inputs <- function(project_root,
     }
     message("Q2: default travel CSV not found at ", input_path)
     message("Q2: skipped. Supply the grading dataset or pass synthetic data explicitly, e.g.:")
-    message("  Rscript code/run.R q2 \"data/synthetic/q2/ahmad_travel_logs.csv\"")
+    message("  Rscript assignment_files/run_assignment.R q2 \"assignment_files/ahmad_travel_logs_synthetic.csv\"")
     return(invisible(list(status = "missing_input", path = input_path, q2_ready = TRUE)))
   }
 

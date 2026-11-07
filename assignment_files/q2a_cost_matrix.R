@@ -19,8 +19,8 @@ required_travel_columns <- c(
 # Returns named relative paths of known synthetic development fixtures.
 known_synthetic_fixtures <- function() {
   c(
-    default = file.path("data", "synthetic", "q2", "ahmad_travel_logs.csv"),
-    forced_penalty_return = file.path("data", "synthetic", "q2", "forced_penalty_return.csv")
+    default = file.path("assignment_files", "ahmad_travel_logs_synthetic.csv"),
+    forced_penalty_return = file.path("assignment_files", "forced_penalty_return.csv")
   )
 }
 
@@ -38,7 +38,7 @@ get_known_synthetic_fixture_key <- function(input_path, project_root = NULL) {
     candidate <- getwd()
     repeat {
       if (file.exists(file.path(candidate, "CPC351-Assignment-1.Rproj")) &&
-          file.exists(file.path(candidate, "code", "run.R"))) {
+          file.exists(file.path(candidate, "assignment_files", "run_assignment.R"))) {
         project_root <- candidate
         break
       }
@@ -482,10 +482,10 @@ export_q2a_artifacts <- function(q2a_result,
 # Standalone CLI execution entry point for Question 2(a).
 run_q2a_cli <- function(arguments = commandArgs(trailingOnly = TRUE)) {
   if (length(arguments) > 1L) {
-    stop("Usage: Rscript code/q2/q2a_cost_matrix.R [travel_csv]", call. = FALSE)
+    stop("Usage: Rscript assignment_files/q2a_cost_matrix.R [travel_csv]", call. = FALSE)
   }
 
-  raw_input_path <- file.path("data", "raw", "q2", "ahmad_travel_logs.csv")
+  raw_input_path <- file.path("assignment_files", "ahmad_travel_logs.csv")
 
   if (length(arguments) == 1L) {
     input_path <- path.expand(arguments[[1L]])
@@ -497,7 +497,7 @@ run_q2a_cli <- function(arguments = commandArgs(trailingOnly = TRUE)) {
   } else {
     message("Q2(a): default travel CSV not found at ", raw_input_path)
     message("Q2(a): skipped. Supply the grading dataset or pass synthetic data explicitly, e.g.:")
-    message("  Rscript code/q2/q2a_cost_matrix.R \"data/synthetic/q2/ahmad_travel_logs.csv\"")
+    message("  Rscript assignment_files/q2a_cost_matrix.R \"assignment_files/ahmad_travel_logs_synthetic.csv\"")
     return(invisible(list(status = "missing_input", path = raw_input_path)))
   }
 

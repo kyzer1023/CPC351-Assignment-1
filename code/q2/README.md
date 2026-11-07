@@ -3,17 +3,17 @@
 ## Current status
 
 - **Q2(a) (Data cleaning & 75th-percentile cost matrix)**: Implemented in
-  `code/q2/q2a_cost_matrix.R`. Reads raw travel logs, filters for Rainy Morning,
+  `assignment_files/q2a_cost_matrix.R`. Reads raw travel logs, filters for Rainy Morning,
   validates coordinates, cleans road closure records (`NA` and `-1`), calculates
   the 75th percentile per directed route, assigns severe penalties, and outputs
   the cost matrix, filtered log, and heatmap.
 - **Q2(b) (Nearest Neighbour routing)**: Implemented in
-  `code/q2/nearest_neighbour.R`. Solves the Hamiltonian tour from any starting
+  `assignment_files/nearest_neighbour.R`. Solves the Hamiltonian tour from any starting
   point (default `P1`), visits all points, handles deterministic tie-breaking,
   adds the closing return edge, tracks penalties, and formats output summaries.
-  Verified by 10 unit test suites in `code/q2/test_nearest_neighbour.R` and a
-  standalone in-memory demonstration in `code/q2/synthetic_demo.R`.
-- **End-to-end pipeline integration**: Connected. Running `code/run.R q2`
+  Verified by 10 unit test suites in `assignment_files/test_nearest_neighbour.R` and a
+  standalone in-memory demonstration in `assignment_files/synthetic_demo.R`.
+- **End-to-end pipeline integration**: Connected. Running `assignment_files/run_assignment.R q2`
   executes the complete sequence: raw travel logs -> Q2(a) cleaning & 75th-percentile
   cost matrix -> Q2(b) Nearest Neighbour routing -> artifact exports.
   Strict input selection is enforced: default input skips honestly when absent,
@@ -21,19 +21,19 @@
 
 ## Input Selection Policy
 
-- **Default Execution (`Rscript code/run.R q2`)**: Searches for the real grading dataset
-  at `data/raw/q2/ahmad_travel_logs.csv`. If absent, skips cleanly and reports missing input;
+- **Default Execution (`Rscript assignment_files/run_assignment.R q2`)**: Searches for the real grading dataset
+  at `assignment_files/ahmad_travel_logs.csv`. If absent, skips cleanly and reports missing input;
   **never silently substitutes synthetic dummy data**.
 - **Explicit CSV Path**: Pass any travel log explicitly, e.g.:
-  `Rscript code/run.R q2 "C:/path/to/ahmad_travel_logs.csv"`
+  `Rscript assignment_files/run_assignment.R q2 "C:/path/to/ahmad_travel_logs.csv"`
 - **Explicit Synthetic Development Data**: Pass the synthetic log path:
-  `Rscript code/run.R q2 "data/synthetic/q2/ahmad_travel_logs.csv"`
+  `Rscript assignment_files/run_assignment.R q2 "assignment_files/ahmad_travel_logs_synthetic.csv"`
   When the synthetic fixture is used, results are clearly labeled in the console
   and output files are prefixed with `synthetic_` so they cannot be mistaken
   for unseen grading data.
 - **Missing or Malformed Explicit Paths**: Raise immediate descriptive errors;
   they are never masked by dummy data fallback.
-- **Standalone Q2(a) CLI (`code/q2/q2a_cost_matrix.R`)**: Enforces the same input policy
+- **Standalone Q2(a) CLI (`assignment_files/q2a_cost_matrix.R`)**: Enforces the same input policy
   without automatic fallback.
 
 ## Commands
@@ -42,37 +42,37 @@ Run from the repository root:
 
 ```powershell
 # Project pipeline runner (default real input: skips honestly if absent)
-Rscript code/run.R q2
+Rscript assignment_files/run_assignment.R q2
 
 # Run pipeline on a specified real/grading travel log
-Rscript code/run.R q2 "C:/path/to/ahmad_travel_logs.csv"
+Rscript assignment_files/run_assignment.R q2 "C:/path/to/ahmad_travel_logs.csv"
 
 # Run pipeline on the explicit development synthetic dataset
-Rscript code/run.R q2 "data/synthetic/q2/ahmad_travel_logs.csv"
+Rscript assignment_files/run_assignment.R q2 "assignment_files/ahmad_travel_logs_synthetic.csv"
 
 # Run pipeline on the synthetic forced-penalty return dataset
-Rscript code/run.R q2 "data/synthetic/q2/forced_penalty_return.csv"
+Rscript assignment_files/run_assignment.R q2 "assignment_files/forced_penalty_return.csv"
 
 # Standalone Q2(a) runner (builds cost matrix, filtered log, and heatmap)
-Rscript code/q2/q2a_cost_matrix.R "data/synthetic/q2/ahmad_travel_logs.csv"
+Rscript assignment_files/q2a_cost_matrix.R "assignment_files/ahmad_travel_logs_synthetic.csv"
 
 # Pipeline integration & input-selection tests (9 test suites)
-Rscript code/q2/test_pipeline.R
+Rscript assignment_files/test_pipeline.R
 
 # Q2(a) cleaning & matrix tests (12 test suites)
-Rscript code/q2/test_q2a_cost_matrix.R
+Rscript assignment_files/test_q2a_cost_matrix.R
 
 # Q2(b) Nearest Neighbour unit tests (10 test suites)
-Rscript code/q2/test_nearest_neighbour.R
+Rscript assignment_files/test_nearest_neighbour.R
 
 # Q2(b) standalone in-memory synthetic demonstration
-Rscript code/q2/synthetic_demo.R
+Rscript assignment_files/synthetic_demo.R
 ```
 
 ## Running Q2(b) against an in-memory cost matrix
 
 ```r
-source("code/q2/nearest_neighbour.R")
+source("assignment_files/nearest_neighbour.R")
 
 # cost_matrix: 10 x 10 numeric matrix with row/col names P1..P10
 # penalty_matrix: optional 10 x 10 logical matrix (TRUE where edge is penalized)
@@ -147,9 +147,9 @@ To connect Q2(a) directly to Q2(b):
      `"unknown"`.
 
 3. **Pipeline Integration**:
-   - `code/q2/q2a_cost_matrix.R` defines `build_q2a_cost_matrix(input_path, points = NULL)`
+   - `assignment_files/q2a_cost_matrix.R` defines `build_q2a_cost_matrix(input_path, points = NULL)`
      returning `list(cost_matrix = M, penalty_matrix = P, penalty_value = V, ...)`.
-   - `code/q2/main.R` and `code/run.R` execute the complete sequence automatically:
+   - `assignment_files/q2_main.R` and `assignment_files/run_assignment.R` execute the complete sequence automatically:
      raw CSV -> Q2(a) cleaning/cost matrix -> Q2(b) Nearest Neighbour routing -> CSV and plot exports.
 
 Write cleaned or aggregated data to `data/processed/q2/` and cost matrices,

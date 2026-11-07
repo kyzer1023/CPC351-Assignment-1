@@ -1,7 +1,7 @@
 # Pipeline integration and input-selection test suite for Question 2.
 #
 # Usage from repository root:
-#   Rscript code/q2/test_pipeline.R
+#   Rscript assignment_files/test_pipeline.R
 
 locate_repo_root <- function() {
   file_argument <- grep("^--file=", commandArgs(), value = TRUE)
@@ -16,7 +16,7 @@ locate_repo_root <- function() {
     candidate <- normalizePath(start, winslash = "/", mustWork = TRUE)
     repeat {
       if (file.exists(file.path(candidate, "CPC351-Assignment-1.Rproj")) &&
-          file.exists(file.path(candidate, "code", "run.R"))) {
+          file.exists(file.path(candidate, "assignment_files", "run_assignment.R"))) {
         return(candidate)
       }
       parent <- dirname(candidate)
@@ -42,8 +42,8 @@ assert_raises_error <- function(expr, description) {
 }
 
 run_pipeline_tests <- function(project_root = locate_repo_root()) {
-  source(file.path(project_root, "code", "q2", "main.R"), local = TRUE)
-  source(file.path(project_root, "code", "q2", "q2a_cost_matrix.R"), local = TRUE)
+  source(file.path(project_root, "assignment_files", "q2_main.R"), local = TRUE)
+  source(file.path(project_root, "assignment_files", "q2a_cost_matrix.R"), local = TRUE)
 
   cat("=== Running Q2 Pipeline & Input-Selection Test Suite ===\n")
 
@@ -94,7 +94,7 @@ run_pipeline_tests <- function(project_root = locate_repo_root()) {
   cat("[PASS] 3. Malformed CSV missing required headers surfaces validation error\n")
 
   # 4. Explicit synthetic CSV executes full Q2(a) -> Q2(b) pipeline end-to-end
-  synthetic_csv <- file.path(project_root, "data", "synthetic", "q2", "ahmad_travel_logs.csv")
+  synthetic_csv <- file.path(project_root, "assignment_files", "ahmad_travel_logs_synthetic.csv")
   res_full <- inspect_q2_inputs(
     project_root = project_root,
     input_path = synthetic_csv,
@@ -229,7 +229,7 @@ run_pipeline_tests <- function(project_root = locate_repo_root()) {
   cat("[PASS] 8. Standalone synthetic artifact naming and unrounded tour sum verified\n")
 
   # 9. Synthetic forced-penalty return fixture executes full pipeline with penalized closing edge
-  forced_csv <- file.path(project_root, "data", "synthetic", "q2", "forced_penalty_return.csv")
+  forced_csv <- file.path(project_root, "assignment_files", "forced_penalty_return.csv")
   stopifnot(
     file.exists(forced_csv),
     isTRUE(is_known_synthetic_fixture(forced_csv, project_root)),

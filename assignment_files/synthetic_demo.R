@@ -5,7 +5,7 @@
 # dataset (ahmad_travel_logs.csv).
 #
 # Usage from repository root:
-#   Rscript code/q2/synthetic_demo.R
+#   Rscript assignment_files/synthetic_demo.R
 
 locate_repo_root <- function() {
   file_argument <- grep("^--file=", commandArgs(), value = TRUE)
@@ -20,7 +20,7 @@ locate_repo_root <- function() {
     candidate <- normalizePath(start, winslash = "/", mustWork = TRUE)
     repeat {
       if (file.exists(file.path(candidate, "CPC351-Assignment-1.Rproj")) &&
-          file.exists(file.path(candidate, "code", "run.R"))) {
+          file.exists(file.path(candidate, "assignment_files", "run_assignment.R"))) {
         return(candidate)
       }
       parent <- dirname(candidate)
@@ -102,7 +102,7 @@ build_synthetic_q2_matrix <- function(penalty_value = 10000) {
 run_synthetic_q2b_demo <- function(project_root = locate_repo_root(),
                                    write_outputs = TRUE,
                                    verbose = TRUE) {
-  source(file.path(project_root, "code", "q2", "nearest_neighbour.R"), local = TRUE)
+  source(file.path(project_root, "assignment_files", "nearest_neighbour.R"), local = TRUE)
 
   synthetic <- build_synthetic_q2_matrix(penalty_value = 10000)
   out_dir <- if (isTRUE(write_outputs)) {

@@ -1,7 +1,7 @@
 # Focused unit and edge-case test suite for Q2(a) data cleaning and cost matrix generation.
 #
 # Usage from repository root:
-#   Rscript code/q2/test_q2a_cost_matrix.R
+#   Rscript assignment_files/test_q2a_cost_matrix.R
 
 locate_repo_root <- function() {
   file_argument <- grep("^--file=", commandArgs(), value = TRUE)
@@ -16,7 +16,7 @@ locate_repo_root <- function() {
     candidate <- normalizePath(start, winslash = "/", mustWork = TRUE)
     repeat {
       if (file.exists(file.path(candidate, "CPC351-Assignment-1.Rproj")) &&
-          file.exists(file.path(candidate, "code", "run.R"))) {
+          file.exists(file.path(candidate, "assignment_files", "run_assignment.R"))) {
         return(candidate)
       }
       parent <- dirname(candidate)
@@ -53,7 +53,7 @@ make_temp_csv <- function(df) {
 }
 
 run_q2a_tests <- function(project_root = locate_repo_root()) {
-  source(file.path(project_root, "code", "q2", "q2a_cost_matrix.R"), local = TRUE)
+  source(file.path(project_root, "assignment_files", "q2a_cost_matrix.R"), local = TRUE)
 
   cat("=== Running Q2(a) Cleaning & Cost Matrix Test Suite ===\n")
 
@@ -261,7 +261,7 @@ run_q2a_tests <- function(project_root = locate_repo_root()) {
   cat("[PASS] 11. Cost and penalty matrices are invariant to input row ordering\n")
 
   # 12. Existing supplied synthetic fixture baseline equivalence
-  res_synth <- build_q2a_cost_matrix(file.path(project_root, "data", "synthetic", "q2", "ahmad_travel_logs.csv"))
+  res_synth <- build_q2a_cost_matrix(file.path(project_root, "assignment_files", "ahmad_travel_logs_synthetic.csv"))
   stopifnot(
     identical(res_synth$stats$valid_travel_records_used, 700L),
     identical(res_synth$stats$observed_directed_routes, 89L),

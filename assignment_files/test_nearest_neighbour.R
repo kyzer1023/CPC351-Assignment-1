@@ -1,7 +1,7 @@
 # Unit and integration tests for Q2(b) Nearest Neighbour routing.
 #
 # Usage from repository root:
-#   Rscript code/q2/test_nearest_neighbour.R
+#   Rscript assignment_files/test_nearest_neighbour.R
 
 locate_repo_root <- function() {
   file_argument <- grep("^--file=", commandArgs(), value = TRUE)
@@ -16,7 +16,7 @@ locate_repo_root <- function() {
     candidate <- normalizePath(start, winslash = "/", mustWork = TRUE)
     repeat {
       if (file.exists(file.path(candidate, "CPC351-Assignment-1.Rproj")) &&
-          file.exists(file.path(candidate, "code", "run.R"))) {
+          file.exists(file.path(candidate, "assignment_files", "run_assignment.R"))) {
         return(candidate)
       }
       parent <- dirname(candidate)
@@ -42,8 +42,8 @@ assert_raises_error <- function(expr, description) {
 }
 
 run_q2b_tests <- function(project_root = locate_repo_root()) {
-  source(file.path(project_root, "code", "q2", "nearest_neighbour.R"), local = TRUE)
-  source(file.path(project_root, "code", "q2", "synthetic_demo.R"), local = TRUE)
+  source(file.path(project_root, "assignment_files", "nearest_neighbour.R"), local = TRUE)
+  source(file.path(project_root, "assignment_files", "synthetic_demo.R"), local = TRUE)
 
   cat("=== Running Q2(b) Nearest Neighbour Test Suite ===\n")
 

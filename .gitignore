@@ -17,6 +17,10 @@ Rplots.pdf
 /submission/*
 !/submission/README.md
 
+# Local project instructions and assignment brief
+/AGENTS.md
+/S261_CPC351_Assignment_01_v01.pdf
+
 # Operating system and editor files
 Thumbs.db
 .DS_Store

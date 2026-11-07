@@ -1,14 +1,14 @@
 # Q1 baseline: read supplied registrations and describe the untouched inputs.
 
 read_q1_registration_lists <- function(project_root) {
-  input_directory <- file.path(project_root, "data", "raw", "q1")
+  input_directory <- file.path(project_root, "assignment_files")
   files <- sort(list.files(input_directory, pattern = "^Q1_[[:alnum:]]+\\.txt$",
                           full.names = TRUE))
   course_codes <- sub("^Q1_(.+)\\.txt$", "\\1", basename(files))
   expected_courses <- c("CCS592", "CDS501", "CDS506", "CDS512", "CDS521", "CDS523")
 
   if (!setequal(course_codes, expected_courses)) {
-    stop("Q1 requires the six supplied registration lists in data/raw/q1/.",
+    stop("Q1 requires the six supplied registration lists in assignment_files/.",
          call. = FALSE)
   }
 
@@ -25,7 +25,7 @@ inspect_q1_inputs <- function(project_root) {
 
   inventory <- data.frame(
     course = course_codes,
-    file = paste0("data/raw/q1/Q1_", course_codes, ".txt"),
+    file = paste0("assignment_files/Q1_", course_codes, ".txt"),
     raw_rows = vapply(registrations, length, integer(1)),
     blank_rows = vapply(registrations, function(rows) {
       as.integer(sum(!nzchar(trimws(rows))))

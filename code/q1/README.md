@@ -2,7 +2,7 @@
 
 `main.R` currently reads the six supplied lists and produces a raw input
 inventory. It does not standardize names, deduplicate students, or schedule exams.
-Use `Rscript code/run.R q1` from the project root.
+Use `Rscript assignment_files/run_assignment.R q1` from the project root.
 
 ## Implementation sequence
 
