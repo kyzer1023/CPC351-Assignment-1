@@ -105,7 +105,7 @@ inspect_q2_inputs <- function(project_root,
 
   # 2. Export Q2(a) artifacts
   out_dir <- if (!is.null(output_dir)) output_dir else file.path(project_root, "outputs", "q2")
-  proc_dir <- if (!is.null(processed_dir)) processed_dir else file.path(project_root, "data", "processed", "q2")
+  proc_dir <- if (!is.null(processed_dir)) processed_dir else file.path(project_root, "outputs", "q2")
   prefix_q2a <- if (is.null(synth_key)) {
     "q2a"
   } else if (identical(synth_key, "forced_penalty_return")) {

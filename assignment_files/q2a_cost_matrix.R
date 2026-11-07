@@ -365,7 +365,7 @@ build_q2a_cost_matrix <- function(input_path,
 # Exports Q2(a) filtered log, matrix CSV, and heatmap plot to specified directories.
 export_q2a_artifacts <- function(q2a_result,
                                  output_dir = file.path("outputs", "q2"),
-                                 processed_dir = file.path("data", "processed", "q2"),
+                                 processed_dir = file.path("outputs", "q2"),
                                  prefix = "q2a",
                                  heatmap_title = NULL,
                                  write_filtered_log = TRUE,

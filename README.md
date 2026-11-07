@@ -2,7 +2,7 @@
 
 USM CPC351/CPM351 Principles of Data Analytics, Semester 1, 2026/2027.
 
-This R assignment processes the Q1 registration lists and Q2 travel logs. The runnable scripts and supplied inputs are together in `assignment_files/`; generated cleaned data and results are written to `data/processed/` and `outputs/`.
+This R assignment processes the Q1 registration lists and Q2 travel logs. The runnable scripts and supplied inputs are together in `assignment_files/`; generated results are written to `outputs/`.
 
 ## Project links
 
@@ -23,6 +23,6 @@ The runner processes Q1 and Q2. Q1 writes an input inventory to `outputs/q1/`. F
 Rscript assignment_files/run_assignment.R q2 assignment_files/ahmad_travel_logs_synthetic.csv
 ```
 
-Q2 outputs are written to `outputs/q2/`; the filtered log is written to `data/processed/q2/`. The `assignment_files/` folder is self-contained for scripts and inputs, while generated results remain outside it.
+Q2 matrices, routes, plots, and filtered logs are written to `outputs/q2/`. The `assignment_files/` folder is self-contained for scripts and inputs.
 
-For details, see the [Q1 notes](code/q1/README.md), [Q2 notes](code/q2/README.md), [data notes](data/README.md), and [submission guide](submission/README.md).
+For packaging guidance, see the [submission guide](submission/README.md).
