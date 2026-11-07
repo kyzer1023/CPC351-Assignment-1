@@ -29,6 +29,9 @@ locate_project_root <- function() {
 
 project_root <- locate_project_root()
 source(file.path(project_root, "assignment_files", "shared_io.R"), local = TRUE)
+source(file.path(project_root, "assignment_files", "q1_clean.R"), local = TRUE)
+source(file.path(project_root, "assignment_files", "q1_conflict.R"), local = TRUE)
+source(file.path(project_root, "assignment_files", "q1_schedule.R"), local = TRUE)
 source(file.path(project_root, "assignment_files", "q1_main.R"), local = TRUE)
 source(file.path(project_root, "assignment_files", "q2_main.R"), local = TRUE)
 
@@ -51,7 +54,7 @@ message("Running assignment pipeline.")
 pipeline_results <- list()
 
 if (mode %in% c("all", "q1")) {
-  pipeline_results$q1 <- inspect_q1_inputs(project_root)
+  pipeline_results$q1 <- run_q1_pipeline(project_root)
 }
 if (mode %in% c("all", "q2")) {
   pipeline_results$q2 <- inspect_q2_inputs(

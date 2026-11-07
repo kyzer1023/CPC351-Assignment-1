@@ -3,7 +3,7 @@ students <- data.frame(
   score = c(75, 82, 90)
 )
 
-View(students)
+print(students)
 
 plot(
   students$score,
