@@ -17,7 +17,7 @@ Install R. Open `CPC351-Assignment-1.Rproj` in RStudio, or run from the reposito
 Rscript assignment_files/run_assignment.R
 ```
 
-The runner processes both questions. Q1 writes cleaned lists, the conflict matrix, an initial timetable, and an updated no-back-to-back timetable to `outputs/q1/`. The supplied data needs five sessions to avoid concurrent clashes; the eight-slot timetable is insufficient, and the stricter no-back-to-back schedule needs five days.
+The runner processes both questions. Q1 writes cleaned lists, the conflict matrix, an initial timetable, and an updated no-back-to-back timetable to `outputs/q1/`. The original eight slots share four time periods over two days. The supplied data needs five time periods over three days for Q1(c), and five days for Q1(d). The console explains both schedules; exams on consecutive days are allowed.
 
 For Q2, place the grading file beside the scripts and name it `ahmad_travel_logs.csv`. The included `ahmad_travel_logs_synthetic.csv` is development data and is never substituted automatically. Run it explicitly with:
 
