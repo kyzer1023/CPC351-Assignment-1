@@ -22,16 +22,7 @@ run_q1_pipeline <- function(project_root = q1_find_project_root(), verbose = TRU
     print(cleaning$audit, row.names = FALSE)
     cat("\nQ1 conflict matrix (shared students):\n")
     print(conflict_matrix)
-    cat("\nQ1 timetable before the back-to-back constraint:\n")
-    cat("Concurrent-conflict timetable (extended if eight slots are insufficient):\n")
-    print(schedule$initial_timetable, row.names = FALSE)
-    cat("\nUpdated timetable with no same-day shared-student examinations:\n")
-    print(schedule$timetable, row.names = FALSE)
-    message("Q1(c): the original eight slots are ",
-            if (schedule$original_eight_slots_sufficient) "sufficient" else "insufficient",
-            " for concurrent-conflict and capacity constraints.")
-    message("Q1(d): the updated no-back-to-back timetable requires ",
-            schedule$minimum_days, " days.")
+    print_q1_timetables(schedule)
     message("Q1: outputs written under outputs/q1/.")
   }
 
