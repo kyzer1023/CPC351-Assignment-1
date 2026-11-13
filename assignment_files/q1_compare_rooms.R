@@ -40,7 +40,7 @@ draw_q1_room_comparison <- function(summary, path, synthetic = FALSE) {
     heights <- c(heights, 0.55, 3.1)
   }
   panels <- rbind(panels, rep(max(panels) + 1L, 3L))
-  png(path, width = 1800, height = if (synthetic) 1240 else 800, res = 150)
+  png(path, width = 1200, height = if (synthetic) 1240 else 800, res = 150)
   layout(panels, heights = c(heights, 0.8))
   par(family = "sans", col.axis = "#334155", col.lab = "#334155")
   colors <- c("#64748b", "#138477", "#7357b5")
@@ -81,11 +81,13 @@ draw_q1_room_comparison <- function(summary, path, synthetic = FALSE) {
       values <- rows[[measure]]
       title <- switch(measure, periods = "Q1(c): periods", days = "Q1(d): days",
                       room_bookings = "Q1(c): room bookings")
-      positions <- barplot(values, names.arg = method_names,
+      positions <- barplot(values, names.arg = rep("", 3L),
                            col = colors, border = NA, ylim = c(0, max(values) * 1.3),
                            las = 1L, cex.names = 1, main = title, cex.main = 1.1,
                            yaxs = "i", axes = FALSE)
       axis(2L, at = seq.int(0L, max(values)), las = 1L, cex.axis = 0.9)
+      mtext(c("Current", "Share\nrooms", "Share +\nsplit"), side = 1L,
+            at = positions, line = 2, cex = 0.75)
       text(positions, values, labels = values, pos = 3L, font = 2L, cex = 1.25)
     }
   }
