@@ -4,7 +4,7 @@ source("assignment_files/q1_clean.R")
 source("assignment_files/q1_conflict.R")
 source("assignment_files/q1_schedule.R")
 source("assignment_files/q1_shared_schedule.R")
-source("assignment_files/q1_synthetic_cases.R")
+source("evidence/q1_rooms/q1_synthetic_cases.R")
 
 test_q1_shared_schedule <- function() {
   expect_error <- function(expression, wording) {

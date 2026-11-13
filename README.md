@@ -24,7 +24,7 @@ Q1 also runs an optional model that lets compatible courses share a room and let
 See the [graphs, timetables and algorithm flowcharts](evidence/q1_rooms/README.md) for the results and synthetic examples. Reproduce them from the repository root with:
 
 ```sh
-Rscript assignment_files/q1_compare_rooms.R
+Rscript evidence/q1_rooms/q1_compare_rooms.R
 ```
 
 For Q2, place the grading file beside the scripts and name it `ahmad_travel_logs.csv`. The included `ahmad_travel_logs_synthetic.csv` is development data and is never substituted automatically. Run it explicitly with:
@@ -37,12 +37,13 @@ Q2 matrices, routes, plots, and filtered logs are written to `outputs/q2/`. To r
 
 ```sh
 Rscript assignment_files/test_q1_pipeline.R
-Rscript assignment_files/test_q1_shared_schedule.R
+Rscript evidence/q1_rooms/test_q1_shared_schedule.R
 Rscript assignment_files/test_q2a_cost_matrix.R
 Rscript assignment_files/test_nearest_neighbour.R
 Rscript assignment_files/test_pipeline.R
 ```
 
 The `assignment_files/` folder contains the scripts and inputs needed to run the assignment.
+The `evidence/` folder contains the PR comparison scripts, synthetic examples, and figures. It is not needed to run the assignment.
 
 For packaging guidance, see the [submission guide](submission/README.md).

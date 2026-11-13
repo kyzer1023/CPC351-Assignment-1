@@ -1,11 +1,11 @@
 # Reproduce the comparison figures with base R. Run from the repository root:
-# Rscript assignment_files/q1_compare_rooms.R
+# Rscript evidence/q1_rooms/q1_compare_rooms.R
 
 source("assignment_files/q1_clean.R")
 source("assignment_files/q1_conflict.R")
 source("assignment_files/q1_schedule.R")
 source("assignment_files/q1_shared_schedule.R")
-source("assignment_files/q1_synthetic_cases.R")
+source("evidence/q1_rooms/q1_synthetic_cases.R")
 
 summarise_q1_room_result <- function(case_name, method, result) {
   rows <- list()
@@ -206,7 +206,7 @@ draw_q1_provided_rooms <- function(baseline, shared, path) {
 run_q1_room_comparison <- function() {
   root <- q1_find_project_root()
   evidence_dir <- file.path(root, "evidence", "q1_rooms")
-  output_dir <- file.path(root, "outputs", "q1", "comparison")
+  output_dir <- file.path(evidence_dir, "generated")
   dir.create(evidence_dir, recursive = TRUE, showWarnings = FALSE)
   dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
   supplied <- clean_q1_registrations(read_q1_registration_lists(root))$courses
@@ -261,7 +261,7 @@ run_q1_room_comparison <- function() {
   draw_q1_room_flowcharts(file.path(evidence_dir, "algorithm_flowcharts.png"))
   draw_q1_provided_rooms(baseline, shared, file.path(evidence_dir, "provided_timetables.png"))
   print(summary, row.names = FALSE)
-  cat("\nFigures: evidence/q1_rooms/. Detailed tables: outputs/q1/comparison/.\n")
+  cat("\nFigures: evidence/q1_rooms/. Detailed tables: evidence/q1_rooms/generated/.\n")
   invisible(summary)
 }
 

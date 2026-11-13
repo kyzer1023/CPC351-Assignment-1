@@ -10,6 +10,9 @@ Rplots.pdf
 !/outputs/**/
 !/outputs/**/.gitkeep
 
+# Detailed tables generated only for the PR comparison
+/evidence/q1_rooms/generated/
+
 # Final PDF exports and packages
 /submission/*
 !/submission/README.md

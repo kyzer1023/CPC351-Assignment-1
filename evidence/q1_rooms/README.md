@@ -62,11 +62,13 @@ The new search minimises periods for (c), days for (d), then room bookings. It d
 From the repository root, run:
 
 ```sh
-Rscript assignment_files/q1_compare_rooms.R
-Rscript assignment_files/test_q1_shared_schedule.R
+Rscript evidence/q1_rooms/q1_compare_rooms.R
+Rscript evidence/q1_rooms/test_q1_shared_schedule.R
 Rscript assignment_files/test_q1_pipeline.R
 ```
 
-The comparison script regenerates the figures and CSV here. It also exports every input registration list, room timetable and new-model student allocation under `outputs/q1/comparison/`. Synthetic inputs come from `assignment_files/q1_synthetic_cases.R`; the original six input files are unchanged.
+The comparison script regenerates the figures and CSV here. It also exports every input registration list, room timetable and new-model student allocation under `evidence/q1_rooms/generated/`, which Git ignores. Synthetic inputs come from `q1_synthetic_cases.R` in this folder; the original six input files are unchanged.
+
+All PR comparison scripts, synthetic examples, and their additional checks live in this folder. The assignment runner uses only `assignment_files/` and does not load anything from `evidence/`.
 
 The checks cover actual student memberships, combined room capacity, simultaneous splitting, conflicts across rooms, no back-to-back exams, missing or repeated allocations, and courses too large for the rooms. A separate exhaustive enumeration checks the minimum period/day count and room bookings for a mixed case containing both student conflicts and room limits. The supplied-data and synthetic minimum claims above also have direct lower bounds.
