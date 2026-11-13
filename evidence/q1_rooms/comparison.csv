@@ -1,0 +1,25 @@
+"dataset","method","part","feasible","periods","days","room_bookings","registrations","booked_seats","unused_seats","split_courses"
+"provided","Current","c",TRUE,5,3,6,265,330,65,0
+"provided","Current","d",TRUE,5,5,6,265,330,65,0
+"provided","Share","c",TRUE,5,3,5,265,290,25,0
+"provided","Share","d",TRUE,5,5,5,265,290,25,0
+"provided","Share + split","c",TRUE,5,3,5,265,290,25,0
+"provided","Share + split","d",TRUE,5,5,5,265,290,25,0
+"small_independent","Current","c",TRUE,3,2,6,90,330,240,0
+"small_independent","Current","d",TRUE,4,2,6,90,300,210,0
+"small_independent","Share","c",TRUE,1,1,2,90,110,20,0
+"small_independent","Share","d",TRUE,1,1,2,90,110,20,0
+"small_independent","Share + split","c",TRUE,1,1,2,90,110,20,0
+"small_independent","Share + split","d",TRUE,1,1,2,90,110,20,0
+"medium_independent","Current","c",TRUE,6,3,6,246,420,174,0
+"medium_independent","Current","d",TRUE,6,3,6,246,420,174,0
+"medium_independent","Share","c",TRUE,6,3,6,246,420,174,0
+"medium_independent","Share","d",TRUE,6,3,6,246,420,174,0
+"medium_independent","Share + split","c",TRUE,3,2,6,246,330,84,3
+"medium_independent","Share + split","d",TRUE,3,2,6,246,330,84,3
+"oversized","Current","c",FALSE,,,,165,,,
+"oversized","Current","d",FALSE,,,,165,,,
+"oversized","Share","c",FALSE,,,,165,,,
+"oversized","Share","d",FALSE,,,,165,,,
+"oversized","Share + split","c",TRUE,2,1,3,165,180,15,1
+"oversized","Share + split","d",TRUE,2,1,3,165,180,15,1

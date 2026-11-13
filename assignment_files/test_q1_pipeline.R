@@ -205,6 +205,22 @@ test_q1_pipeline <- function() {
   expect_error(generate_q1_timetable(large_courses, build_q1_conflict_matrix(large_courses)),
                "venue capacities")
 
+  # The normal Q1 runner also exports the optional model and student rooms.
+  shared <- result$shared_schedule
+  shared_dir <- file.path(root, "outputs", "q1", "shared_rooms")
+  exports <- list(concurrent_conflict_timetable = shared$initial_timetable,
+                  examination_timetable = shared$timetable,
+                  initial_student_rooms = shared$initial_allocation,
+                  updated_student_rooms = shared$updated_allocation)
+  for (name in names(exports)) {
+    saved <- read.csv(file.path(shared_dir, paste0(name, ".csv")))
+    stopifnot(identical(saved, exports[[name]]))
+  }
+  stopifnot(shared$initial_minimum_sessions == 5L, shared$minimum_days == 5L,
+            length(unique(shared$initial_timetable$slot)) == 5L,
+            grepl("Occupied room bookings for (c): 6 before, 5 after.",
+                  console_text, fixed = TRUE))
+
   cat("ALL Q1 PIPELINE CHECKS PASSED.\n")
   invisible(TRUE)
 }

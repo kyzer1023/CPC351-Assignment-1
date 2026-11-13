@@ -19,6 +19,14 @@ Rscript assignment_files/run_assignment.R
 
 The runner processes both questions. Q1 writes cleaned lists, the conflict matrix, an initial timetable, and an updated no-back-to-back timetable to `outputs/q1/`. The original eight slots share four time periods over two days. The supplied data needs five time periods over three days for Q1(c), and five days for Q1(d). The console explains both schedules; exams on consecutive days are allowed.
 
+Q1 also runs an optional model that lets compatible courses share a room and lets a course split across both rooms in the same period. Its room tables and individual student allocations go to `outputs/q1/shared_rooms/`. On the supplied data it saves one room booking, while keeping the same five-period/five-day limits. The original timetable remains available for comparison.
+
+See the [graphs, timetables and algorithm flowcharts](evidence/q1_rooms/README.md) for the results and synthetic examples. Reproduce them from the repository root with:
+
+```sh
+Rscript assignment_files/q1_compare_rooms.R
+```
+
 For Q2, place the grading file beside the scripts and name it `ahmad_travel_logs.csv`. The included `ahmad_travel_logs_synthetic.csv` is development data and is never substituted automatically. Run it explicitly with:
 
 ```sh
@@ -29,6 +37,7 @@ Q2 matrices, routes, plots, and filtered logs are written to `outputs/q2/`. To r
 
 ```sh
 Rscript assignment_files/test_q1_pipeline.R
+Rscript assignment_files/test_q1_shared_schedule.R
 Rscript assignment_files/test_q2a_cost_matrix.R
 Rscript assignment_files/test_nearest_neighbour.R
 Rscript assignment_files/test_pipeline.R
