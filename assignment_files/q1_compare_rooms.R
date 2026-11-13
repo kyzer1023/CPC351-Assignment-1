@@ -24,36 +24,79 @@ summarise_q1_room_result <- function(case_name, method, result) {
   do.call(rbind, rows)
 }
 
-draw_q1_room_comparison <- function(summary, path) {
-  png(path, width = 1680, height = 1320, res = 150)
-  par(mfrow = c(3L, 3L), mar = c(3.5, 3.5, 3.2, 1), oma = c(3, 1, 4, 1),
-      family = "sans", col.axis = "#334155", col.lab = "#334155")
+draw_q1_room_comparison <- function(summary, path, synthetic = FALSE) {
+  # Separate figures prevent synthetic gains being mistaken for supplied-data gains.
+  case_names <- if (synthetic) c("small_independent", "medium_independent") else "provided"
+  labels <- if (synthetic) {
+    c("Case A: six courses of 15 students | no shared students",
+      "Case B: six courses of 41 students | no shared students")
+  } else {
+    "Six supplied courses | 265 registrations | 167 students"
+  }
+  panels <- rbind(c(1L, 1L, 1L), c(2L, 2L, 2L), c(3L, 3L, 3L), c(4L, 5L, 6L))
+  heights <- c(0.8, 1.1, 0.55, 3.1)
+  if (synthetic) {
+    panels <- rbind(panels, c(7L, 7L, 7L), c(8L, 9L, 10L))
+    heights <- c(heights, 0.55, 3.1)
+  }
+  panels <- rbind(panels, rep(max(panels) + 1L, 3L))
+  png(path, width = 1800, height = if (synthetic) 1240 else 800, res = 150)
+  layout(panels, heights = c(heights, 0.8))
+  par(family = "sans", col.axis = "#334155", col.lab = "#334155")
   colors <- c("#64748b", "#138477", "#7357b5")
-  case_names <- c("provided", "small_independent", "medium_independent")
-  labels <- c("Provided data: six courses", "Synthetic: six independent 15-student courses",
-              "Synthetic: six independent 41-student courses")
+
+  par(mar = c(0, 0, 0, 0))
+  plot.new()
+  plot.window(xlim = c(0, 100), ylim = c(0, 1), xaxs = "i", yaxs = "i")
+  rect(0, 0, 100, 1, col = if (synthetic) "#fff2df" else "#e8f0f9", border = NA)
+  text(2, 0.7, if (synthetic) "SYNTHETIC DATA: CONTROLLED EXAMPLES" else "PROVIDED DATA: ACTUAL RESULTS",
+       adj = 0, font = 2L, cex = 1.3, col = "#0f172a")
+  text(2, 0.28, if (synthetic) "Where room sharing and splitting can shorten the timetable" else
+         "Same timetable length, with one fewer occupied room booking",
+       adj = 0, cex = 1.05, col = "#334155")
+
+  plot.new()
+  plot.window(xlim = c(0, 100), ylim = c(0, 1), xaxs = "i", yaxs = "i")
+  method_names <- c("Current", "Share rooms", "Share + split")
+  descriptions <- c("One course per room.\nKeep its students together.",
+                    "Compatible courses share a room.\nKeep each course together.",
+                    "Also let a course use both rooms\nin the same period.")
+  for (i in 1:3) {
+    x <- (i - 1L) * 33.3 + 2
+    rect(x, 0.69, x + 1.3, 0.86, col = colors[[i]], border = NA)
+    text(x + 2, 0.77, method_names[[i]], adj = 0, font = 2L, cex = 1.1)
+    text(x, 0.32, descriptions[[i]], adj = 0, cex = 0.95, col = "#334155")
+  }
+
   for (i in seq_along(case_names)) {
+    par(mar = c(0, 0, 0, 0))
+    plot.new()
+    plot.window(xlim = c(0, 100), ylim = c(0, 1))
+    text(2, 0.5, labels[[i]], adj = 0, font = 2L, cex = 1.05, col = "#0f172a")
+    par(mar = c(3, 3.5, 2, 1))
     for (measure in c("periods", "days", "room_bookings")) {
       part <- if (measure == "days") "d" else "c"
       rows <- summary[summary$dataset == case_names[[i]] & summary$part == part, ]
+      rows <- rows[match(c("Current", "Share", "Share + split"), rows$method), ]
       values <- rows[[measure]]
-      title <- switch(measure, periods = "Q1(c): time periods", days = "Q1(d): days",
-                      room_bookings = "Q1(c): occupied room bookings")
-      positions <- barplot(values, names.arg = c("Current", "Share", "Share + split"),
+      title <- switch(measure, periods = "Q1(c): periods", days = "Q1(d): days",
+                      room_bookings = "Q1(c): room bookings")
+      positions <- barplot(values, names.arg = method_names,
                            col = colors, border = NA, ylim = c(0, max(values) * 1.3),
-                           las = 1L, cex.names = 0.85, main = title, cex.main = 0.95,
+                           las = 1L, cex.names = 1, main = title, cex.main = 1.1,
                            yaxs = "i", axes = FALSE)
-      axis(2L, at = seq.int(0L, max(values)), las = 1L, cex.axis = 0.8)
-      text(positions, values, labels = values, pos = 3L, font = 2L, cex = 1.1)
-      mtext(labels[[i]], side = 3L, line = 0.35, cex = 0.63, col = "#475569")
+      axis(2L, at = seq.int(0L, max(values)), las = 1L, cex.axis = 0.9)
+      text(positions, values, labels = values, pos = 3L, font = 2L, cex = 1.25)
     }
   }
-  mtext("Room sharing and splitting: what changes?", outer = TRUE, side = 3L,
-        line = 1.5, font = 2L, cex = 1.3)
-  mtext("Lower is better. Same two rooms (40 + 70 seats), same conflict rules for all methods.",
-        outer = TRUE, side = 1L, line = 0.5, cex = 0.85)
-  mtext("Synthetic cases isolate room limits; they do not predict gains on the supplied data.",
-        outer = TRUE, side = 1L, line = 1.7, cex = 0.8, col = "#475569")
+  par(mar = c(0, 0, 0, 0))
+  plot.new()
+  plot.window(xlim = c(0, 100), ylim = c(0, 1))
+  text(50, 0.73, if (synthetic) "These favourable cases do not predict gains on the provided data." else
+         "Sharing saves one booking. Allowing splitting adds no further gain here.",
+       font = 2L, cex = 1.05, col = "#334155")
+  text(50, 0.25, "Lower is better. One booking = one occupied room in one period. Rooms: 40 + 70 seats.",
+       cex = 0.95, col = "#475569")
   dev.off()
 }
 
@@ -211,7 +254,8 @@ run_q1_room_comparison <- function() {
   summary <- do.call(rbind, summaries)
   rownames(summary) <- NULL
   write.csv(summary, file.path(evidence_dir, "comparison.csv"), row.names = FALSE, na = "")
-  draw_q1_room_comparison(summary, file.path(evidence_dir, "comparison.png"))
+  draw_q1_room_comparison(summary, file.path(evidence_dir, "provided_comparison.png"))
+  draw_q1_room_comparison(summary, file.path(evidence_dir, "synthetic_comparison.png"), synthetic = TRUE)
   draw_q1_room_flowcharts(file.path(evidence_dir, "algorithm_flowcharts.png"))
   draw_q1_provided_rooms(baseline, shared, file.path(evidence_dir, "provided_timetables.png"))
   print(summary, row.names = FALSE)

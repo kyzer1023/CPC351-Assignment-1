@@ -4,19 +4,25 @@ The new model uses room space more freely. Courses with no shared students can s
 
 The original model gives each course a whole room. Both models use the same two venues: 40 and 70 seats. For Q1(c), courses with shared students need different periods. For Q1(d), they need different days because morning and afternoon are back-to-back. Consecutive days are allowed.
 
-## Results at a glance
+## What do the three methods mean?
 
-![Comparison of current, sharing-only and sharing-plus-splitting schedules](comparison.png)
+| Method | Room sharing | Course splitting |
+| --- | --- | --- |
+| Current | Each course has its own room. | Each course stays together. |
+| Share rooms | Courses with no shared students may share a room. | Each course stays together. |
+| Share + split | Courses with no shared students may share a room. | A course may use both rooms in the same period. |
+
+Allowing splitting does not force a split. If sharing alone is enough, the last two methods can give the same result.
+
+## Provided data: actual results
+
+![Provided-data comparison with definitions of the three methods](provided_comparison.png)
 
 | Dataset | Q1(c): periods, current → new | Q1(d): days, current → new | Room bookings for (c), current → new |
 | --- | --- | --- | --- |
 | Supplied six courses | 5 → 5 | 5 → 5 | 6 → 5 (17% fewer) |
-| Synthetic: six independent courses of 15 students | 3 → 1 (67% fewer) | 2 → 1 (50% fewer) | 6 → 2 (67% fewer) |
-| Synthetic: six independent courses of 41 students | 6 → 3 (50% fewer) | 3 → 2 (33% fewer) | 6 → 6 |
 
 A room booking is one occupied venue in one period. Two courses sharing that venue count as one booking. The last column counts bookings across the whole Q1(c) timetable. Q1(d) has the same booking counts in these examples. Percentages are rounded; [comparison.csv](comparison.csv) contains the exact counts.
-
-## What improves on the supplied data?
 
 ![Actual schedules before and after allowing room sharing](provided_timetables.png)
 
@@ -24,7 +30,14 @@ CDS501 has 54 students and CDS523 has 6. They have no shared students, so all 60
 
 The timetable cannot become shorter: CCS592, CDS506, CDS512, CDS521 and CDS523 all conflict with one another. Those five courses require at least five different periods for (c), or five different days for (d), regardless of room arrangements. Both models reach those limits.
 
-## Why use synthetic examples?
+## Synthetic data: controlled examples
+
+![Synthetic-data comparisons shown separately from the provided-data results](synthetic_comparison.png)
+
+| Dataset | Q1(c): periods, current → new | Q1(d): days, current → new | Room bookings for (c), current → new |
+| --- | --- | --- | --- |
+| Six independent courses of 15 students | 3 → 1 (67% fewer) | 2 → 1 (50% fewer) | 6 → 2 (67% fewer) |
+| Six independent courses of 41 students | 6 → 3 (50% fewer) | 3 → 2 (33% fewer) | 6 → 6 |
 
 The examples isolate two room restrictions. They are deliberately favourable cases, not estimates of typical improvements. Every synthetic course has its own students, so these examples have no shared-student conflicts. Both methods receive exactly the same registrations in each comparison.
 
