@@ -7,12 +7,12 @@ test_q1_pipeline <- function() {
   source(file.path(script_dir, "q1_schedule.R"), local = TRUE)
   source(file.path(script_dir, "q1_main.R"), local = TRUE)
 
-  root <- q1_find_project_root()
+  root <- find_q1_project_root()
   console <- capture.output(result <- suppressMessages(run_q1_pipeline(root)))
   courses <- result$cleaning$courses
   conflict <- result$conflict_matrix
-  initial <- result$schedule$initial_timetable
-  updated <- result$schedule$timetable
+  period_timetable <- result$schedule$period_timetable
+  day_timetable <- result$schedule$day_timetable
 
   stopifnot(
     identical(length(courses), 6L),
@@ -27,7 +27,7 @@ test_q1_pipeline <- function() {
     identical(as.integer(diag(conflict)), as.integer(lengths(courses))),
     identical(unname(conflict["CDS506", "CDS521"]), 23L),
     identical(unname(conflict["CDS501", "CDS523"]), 0L),
-    identical(result$schedule$initial_minimum_sessions, 5L),
+    identical(result$schedule$minimum_periods, 5L),
     isFALSE(result$schedule$original_eight_slots_sufficient),
     identical(result$schedule$minimum_days, 5L)
   )
@@ -69,13 +69,13 @@ test_q1_pipeline <- function() {
     invisible(TRUE)
   }
 
-  check_schedule(initial, courses)
-  check_schedule(updated, courses, no_back_to_back = TRUE)
+  check_schedule(period_timetable, courses)
+  check_schedule(day_timetable, courses, no_back_to_back = TRUE)
   stopifnot(
-    length(unique(paste(initial$day, initial$period))) == 5L,
-    length(unique(updated$day)) == 5L,
-    max(initial$day) == 3L,
-    any(initial$slot > 8L)
+    length(unique(paste(period_timetable$day, period_timetable$period))) == 5L,
+    length(unique(day_timetable$day)) == 5L,
+    max(period_timetable$day) == 3L,
+    any(period_timetable$slot > 8L)
   )
 
   # A group of five pairwise-conflicting courses proves that four periods
@@ -97,16 +97,16 @@ test_q1_pipeline <- function() {
   )
   stopifnot(all(file.exists(file.path(root, "outputs", "q1", output_files))))
 
-  initial_csv <- read.csv(file.path(root, "outputs/q1/concurrent_conflict_timetable.csv"))
-  updated_csv <- read.csv(file.path(root, "outputs/q1/examination_timetable.csv"))
+  period_csv <- read.csv(file.path(root, "outputs/q1/concurrent_conflict_timetable.csv"))
+  day_csv <- read.csv(file.path(root, "outputs/q1/examination_timetable.csv"))
   validation_csv <- read.csv(file.path(root, "outputs/q1/timetable_validation.csv"))
   stopifnot(
-    identical(initial_csv, initial),
-    identical(updated_csv, updated),
+    identical(period_csv, period_timetable),
+    identical(day_csv, day_timetable),
     identical(validation_csv, result$validation),
-    validation_csv$courses_scheduled == nrow(initial_csv),
-    validation_csv$initial_time_periods_required == nrow(unique(initial_csv[c("day", "period")])),
-    validation_csv$updated_days_required == length(unique(updated_csv$day)),
+    validation_csv$courses_scheduled == nrow(period_csv),
+    validation_csv$initial_time_periods_required == nrow(unique(period_csv[c("day", "period")])),
+    validation_csv$updated_days_required == length(unique(day_csv$day)),
     !validation_csv$original_eight_slots_sufficient,
     validation_csv$back_to_back_conflicts == 0L,
     validation_csv$capacity_violations == 0L
@@ -115,7 +115,8 @@ test_q1_pipeline <- function() {
   console_text <- paste(console, collapse = "\n")
   section_starts <- grep("^Q1\\([cd]\\): (No concurrent|No back-to-back)", console)
   stopifnot(length(section_starts) == 2L)
-  tables <- list(initial_csv, updated_csv)
+  tables <- list(period_csv, day_csv)
+  # Compare each part's printed table with the corresponding exported timetable.
   for (part in 1:2) {
     section_end <- if (part == 1L) section_starts[[2L]] - 1L else length(console)
     section <- console[seq.int(section_starts[[part]], section_end)]
@@ -126,10 +127,12 @@ test_q1_pipeline <- function() {
               any(grepl("Venue 1 (40 seats)", section, fixed = TRUE)),
               any(grepl("Venue 2 (70 seats)", section, fixed = TRUE)))
 
+    # Recreate the expected display for each occupied period.
     for (i in seq_len(nrow(periods))) {
       bookings <- table[table$day == periods$day[[i]] &
                           table$period == periods$period[[i]], ]
       cells <- c("-", "-")
+      # Fill both venue cells, leaving a dash when that room is unused.
       for (room in 1:2) {
         exam <- bookings[bookings$venue == paste("Venue", room), ]
         if (nrow(exam) == 1L) {
@@ -146,9 +149,9 @@ test_q1_pipeline <- function() {
     grepl("Restriction: Courses sharing students must use different days.", console_text, fixed = TRUE),
     grepl("Consecutive days are allowed.", console_text, fixed = TRUE),
     grepl("Original 2-day limit: insufficient", console_text, fixed = TRUE),
-    grepl(paste("Result:", nrow(initial_csv), "courses |", validation_csv$initial_time_periods_required,
-                "periods |", max(initial_csv$day), "days"), console_text, fixed = TRUE),
-    grepl(paste("Result:", nrow(updated_csv), "courses |", validation_csv$updated_days_required,
+    grepl(paste("Result:", nrow(period_csv), "courses |", validation_csv$initial_time_periods_required,
+                "periods |", max(period_csv$day), "days"), console_text, fixed = TRUE),
+    grepl(paste("Result:", nrow(day_csv), "courses |", validation_csv$updated_days_required,
                 "days"), console_text, fixed = TRUE),
     !grepl("Checks:|Concurrent clashes:|Capacity violations:|The search tries|Slot numbering continues",
            paste(console[seq.int(section_starts[[1L]], length(console))], collapse = "\n"))
@@ -166,18 +169,18 @@ test_q1_pipeline <- function() {
     course = c("CCS592", "CDS506"), students = c(38L, 38L)
   )
   pair_conflict <- conflict[pair$course, pair$course]
-  expect_error(validate_q1_initial_timetable(pair, pair_conflict), "concurrent")
+  expect_error(validate_q1_period_timetable(pair, pair_conflict), "concurrent")
 
   # Same-day morning/afternoon is valid for (c), but forbidden for (d).
   pair$period[[2L]] <- "Afternoon"
   pair$slot[[2L]] <- 4L
-  validate_q1_initial_timetable(pair, pair_conflict)
-  expect_error(validate_q1_timetable(pair, pair_conflict), "same day")
+  validate_q1_period_timetable(pair, pair_conflict)
+  expect_error(validate_q1_day_timetable(pair, pair_conflict), "same day")
   # The same student may sit exams on consecutive days.
   pair$day[[2L]] <- 2L
   pair$period[[2L]] <- "Morning"
   pair$slot[[2L]] <- 6L
-  validate_q1_timetable(pair, pair_conflict)
+  validate_q1_day_timetable(pair, pair_conflict)
 
   # Even courses with no common students cannot double-book a room.
   pair_conflict[1L, 2L] <- pair_conflict[2L, 1L] <- 0L
@@ -185,53 +188,53 @@ test_q1_pipeline <- function() {
   pair$slot[[2L]] <- 1L
   pair$venue[[2L]] <- "Venue 1"
   pair$capacity[[2L]] <- 40L
-  expect_error(validate_q1_initial_timetable(pair, pair_conflict), "booked more than once")
+  expect_error(validate_q1_period_timetable(pair, pair_conflict), "booked more than once")
 
-  bad <- initial
+  bad <- period_timetable
   bad$capacity[[1L]] <- 999L
-  expect_error(validate_q1_initial_timetable(bad, conflict), "actual enrolment or venue capacity")
-  bad <- initial
+  expect_error(validate_q1_period_timetable(bad, conflict), "actual enrolment or venue capacity")
+  bad <- period_timetable
   bad$students[[1L]] <- 1L
-  expect_error(validate_q1_initial_timetable(bad, conflict), "actual enrolment or venue capacity")
-  bad <- initial
+  expect_error(validate_q1_period_timetable(bad, conflict), "actual enrolment or venue capacity")
+  bad <- period_timetable
   large_row <- match("CDS501", bad$course)
   bad$day[[large_row]] <- 6L
   bad$period[[large_row]] <- "Morning"
   bad$venue[[large_row]] <- "Venue 1"
   bad$capacity[[large_row]] <- 40L
   bad$slot[[large_row]] <- 21L
-  expect_error(validate_q1_initial_timetable(bad, conflict), "actual enrolment or venue capacity")
-  bad <- initial
+  expect_error(validate_q1_period_timetable(bad, conflict), "actual enrolment or venue capacity")
+  bad <- period_timetable
   bad$slot[[1L]] <- 50L
-  expect_error(validate_q1_initial_timetable(bad, conflict), "Slot numbers")
-  expect_error(validate_q1_initial_timetable(initial[-1L, ], conflict), "exactly once")
-  expect_error(validate_q1_initial_timetable(rbind(initial, initial[1L, ]), conflict), "exactly once")
+  expect_error(validate_q1_period_timetable(bad, conflict), "Slot numbers")
+  expect_error(validate_q1_period_timetable(period_timetable[-1L, ], conflict), "exactly once")
+  expect_error(validate_q1_period_timetable(rbind(period_timetable, period_timetable[1L, ]), conflict), "exactly once")
 
   # No shared students: room capacities alone can make eight slots insufficient.
   large_courses <- setNames(lapply(seq_len(6L), function(i) {
     paste0("course", i, "_student", seq_len(41L))
   }), names(courses))
   large_conflict <- build_q1_conflict_matrix(large_courses)
-  large_result <- generate_q1_timetable(large_courses, large_conflict)
+  large_result <- generate_q1_timetables(large_courses, large_conflict)
   stopifnot(
-    large_result$initial_minimum_sessions == 6L,
+    large_result$minimum_periods == 6L,
     !large_result$original_eight_slots_sufficient,
     large_result$minimum_days == 3L
   )
-  check_schedule(large_result$initial_timetable, large_courses)
-  check_schedule(large_result$timetable, large_courses, no_back_to_back = TRUE)
+  check_schedule(large_result$period_timetable, large_courses)
+  check_schedule(large_result$day_timetable, large_courses, no_back_to_back = TRUE)
 
   # Six independent small exams fit in three periods, or two days for (d).
   small_courses <- lapply(large_courses, head, 40L)
-  small_result <- generate_q1_timetable(small_courses, build_q1_conflict_matrix(small_courses))
-  stopifnot(small_result$initial_minimum_sessions == 3L,
+  small_result <- generate_q1_timetables(small_courses, build_q1_conflict_matrix(small_courses))
+  stopifnot(small_result$minimum_periods == 3L,
             small_result$original_eight_slots_sufficient,
             small_result$minimum_days == 2L)
-  check_schedule(small_result$initial_timetable, small_courses)
-  check_schedule(small_result$timetable, small_courses, no_back_to_back = TRUE)
+  check_schedule(small_result$period_timetable, small_courses)
+  check_schedule(small_result$day_timetable, small_courses, no_back_to_back = TRUE)
 
   large_courses[[1L]] <- paste0("oversized", seq_len(71L))
-  expect_error(generate_q1_timetable(large_courses, build_q1_conflict_matrix(large_courses)),
+  expect_error(generate_q1_timetables(large_courses, build_q1_conflict_matrix(large_courses)),
                "venue capacities")
 
   cat("ALL Q1 PIPELINE CHECKS PASSED.\n")

@@ -23,6 +23,8 @@ Each course stays together in one room, and each room holds one course per perio
 
 To follow the Q1 code, start with `q1_main.R`. It calls `q1_clean.R` for Q1(a), `q1_conflict.R` for Q1(b), and `q1_schedule.R` for Q1(c-d). The scheduler tries smaller period/day limits first. For each course it tries a placement, checks room capacity and student conflicts, then works on the remaining courses. If a later course cannot fit, it returns to the previous choice and tries another. The first complete assignment gives the minimum number of periods for (c), or days for (d). Both timetables are validated before export. Q1 uses the six supplied registration lists.
 
+Within `q1_schedule.R`, functions follow assignment order: the period search, timetable builder, and validator for Q1(c), then the day search, builder, and validator for Q1(d). `generate_q1_timetables()` runs both parts and returns `period_timetable`, `day_timetable`, `minimum_periods`, and `minimum_days`, together with the original two-day feasibility check. Printing, export, and the standalone entry point follow at the end of the file. Brief comments explain the main loops and the choices made during backtracking.
+
 For Q2, place the grading file beside the scripts and name it `ahmad_travel_logs.csv`. The included `ahmad_travel_logs_synthetic.csv` is development data and is never substituted automatically. Run it explicitly with:
 
 ```sh

@@ -2,14 +2,16 @@
 
 q1_expected_courses <- c("CCS592", "CDS501", "CDS506", "CDS512", "CDS521", "CDS523")
 
-q1_find_project_root <- function() {
+find_q1_project_root <- function() {
   file_argument <- grep("^--file=", commandArgs(), value = TRUE)
   starting_points <- getwd()
   if (length(file_argument) > 0L) {
     starting_points <- c(dirname(sub("^--file=", "", file_argument[[1L]])), starting_points)
   }
+  # Look for the project from the script's folder and the current working folder.
   for (start in starting_points) {
     candidate <- normalizePath(start, winslash = "/", mustWork = TRUE)
+    # Walk up through parent folders until the project files are found.
     repeat {
       if (file.exists(file.path(candidate, "CPC351-Assignment-1.Rproj")) &&
           file.exists(file.path(candidate, "assignment_files", "run_assignment.R"))) {
@@ -51,6 +53,7 @@ normalize_q1_student_ids <- function(values) {
   normalized_digits <- sub("^0+", "", digits[valid])
   normalized_digits[!nzchar(normalized_digits)] <- "0"
   padding <- pmax(0L, 3L - nchar(normalized_digits))
+  # Write each valid ID as NAME plus at least three digits, preserving larger IDs.
   valid_ids <- paste0("NAME", vapply(seq_along(normalized_digits), function(i) {
     paste0(strrep("0", padding[[i]]), normalized_digits[[i]])
   }, character(1)))
@@ -68,6 +71,7 @@ clean_q1_registrations <- function(registrations) {
   cleaned <- setNames(vector("list", length(q1_expected_courses)), q1_expected_courses)
   audit_rows <- vector("list", length(q1_expected_courses))
   
+  # Clean each course separately and record what changed in its audit row.
   for (i in seq_along(q1_expected_courses)) {
     course <- q1_expected_courses[[i]]
     values <- registrations[[course]]
@@ -104,6 +108,7 @@ write_q1_cleaning_outputs <- function(cleaning_result, project_root) {
                    file.path(output_dir, "q1_cleaning_audit.csv"),
                    row.names = FALSE)
   saveRDS(cleaning_result$courses, file.path(output_dir, "courses_clean.rds"))
+  # Save one cleaned registration list per course for inspection and later reuse.
   for (course in names(cleaning_result$courses)) {
     writeLines(
       cleaning_result$courses[[course]],
@@ -114,7 +119,7 @@ write_q1_cleaning_outputs <- function(cleaning_result, project_root) {
   invisible(output_dir)
 }
 
-run_q1_cleaning <- function(project_root = q1_find_project_root()) {
+run_q1_cleaning <- function(project_root = find_q1_project_root()) {
   result <- clean_q1_registrations(read_q1_registration_lists(project_root))
   write_q1_cleaning_outputs(result, project_root)
   result
@@ -189,7 +194,7 @@ plot_q1_course_sizes <- function(courses, output_dir) {
 }
 
 if (sys.nframe() == 0L) {
-  root <- q1_find_project_root()
+  root <- find_q1_project_root()
   result <- run_q1_cleaning(root)
   
   # Inspection and figures for the report
