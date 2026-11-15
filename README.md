@@ -19,7 +19,9 @@ Rscript assignment_files/run_assignment.R
 
 The runner processes both questions. Q1 writes cleaned lists, the conflict matrix, an initial timetable, and an updated no-back-to-back timetable to `outputs/q1/`. The original eight slots share four time periods over two days. The supplied data needs five time periods over three days for Q1(c), and five days for Q1(d). The console shows both schedules with their restrictions; exams on consecutive days are allowed.
 
-Q1 also runs an optional model that lets compatible courses share a room and lets a course split across both rooms in the same period. Its room tables and individual student allocations go to `outputs/q1/shared_rooms/`. On the supplied data it saves one room booking, while keeping the same five-period/five-day limits. The original timetable remains available for comparison.
+Each course stays together in one room, and each room holds one course per period. Venue 1 seats 40 students and Venue 2 seats 70. A **period** means one morning or afternoon across both venues; a **slot** means one venue in one period. Two days therefore provide four periods and eight room slots.
+
+To follow the Q1 code, start with `q1_main.R`. It calls `q1_clean.R` for Q1(a), `q1_conflict.R` for Q1(b), and `q1_schedule.R` for Q1(c-d). The scheduler tries smaller period/day limits first. For each course it tries a placement, checks room capacity and student conflicts, then works on the remaining courses. If a later course cannot fit, it returns to the previous choice and tries another. The first complete assignment gives the minimum number of periods for (c), or days for (d). Both timetables are validated before export. Q1 uses the six supplied registration lists.
 
 For Q2, place the grading file beside the scripts and name it `ahmad_travel_logs.csv`. The included `ahmad_travel_logs_synthetic.csv` is development data and is never substituted automatically. Run it explicitly with:
 

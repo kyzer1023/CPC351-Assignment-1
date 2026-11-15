@@ -9,6 +9,8 @@ build_q1_conflict_matrix <- function(courses) {
     stop("courses must be a named list of six cleaned registration vectors.", call. = FALSE)
   }
   course_names <- names(courses)
+  # Off-diagonal entries count shared students: a positive value means a clash.
+  # Comparing a course with itself gives its enrolment on the diagonal.
   overlap <- function(course_a, course_b) {
     length(intersect(courses[[course_a]], courses[[course_b]]))
   }

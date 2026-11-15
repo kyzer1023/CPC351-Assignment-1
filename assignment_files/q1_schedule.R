@@ -1,6 +1,18 @@
 # Q1(c): avoid shared-student exams in the same morning or afternoon.
 # Q1(d): also avoid shared-student exams on the same day.
-# Each period has Venue 1 (40 seats) and Venue 2 (70 seats).
+# Each course stays together in one room; each room holds one course per period.
+# Venue 1 has 40 seats and Venue 2 has 70 seats.
+#
+# Terminology used below:
+#   A session (or period) is one morning or afternoon, across both venues.
+#   A slot is one room in one period. Each day therefore has four slots:
+#     Morning: Venue 1 = slot 1, Venue 2 = slot 2.
+#     Afternoon: Venue 1 = slot 3, Venue 2 = slot 4.
+#   Slot numbers continue on later days: Day 2 starts at slot 5.
+#
+# Both searches use backtracking: try a placement, finish the remaining courses,
+# and try another placement if that branch fails. They return the first solution
+# at the smallest feasible limit. Room placement and validation follow below.
 
 find_q1_day_assignment <- function(conflict_matrix, course_sizes) {
   course_names <- rownames(conflict_matrix)
@@ -8,43 +20,36 @@ find_q1_day_assignment <- function(conflict_matrix, course_sizes) {
   n_courses <- length(course_names)
 
   try_days <- function(day_limit) {
-    # assigned_day has one entry per course. A value of 0 means unassigned.
-    # For example, c(1, 0, 2) means:
-    #   Course 1 has its exam on Day 1.
-    #   Course 2 has not been assigned a day yet.
-    #   Course 3 has its exam on Day 2.
-    # integer(n_courses) starts every entry at 0, so all courses are unassigned.
-    assigned_day <- integer(n_courses)
-    day_counts <- integer(day_limit)
-    large_course_counts <- integer(day_limit)
-
-    # Try a day for the next course. Undo the choice if later courses do not fit.
-    search <- function(position, used_days) {
-      if (position > n_courses) return(TRUE)
-      course_index <- position
+    # One entry per course: c(1, 0, 2) means Day 1, unassigned, Day 2.
+    # A completed assignment is returned on success; NULL means this branch failed.
+    search <- function(course_index, assigned_day) {
+      if (course_index > n_courses) return(assigned_day)
       size <- course_sizes[[course_index]]
+      used_days <- max(assigned_day)
+      # Existing days plus the next unused day are enough. Skipping an empty day
+      # would only produce the same timetable with different day numbers.
       last_day <- min(day_limit, used_days + 1L)
 
       for (day in seq_len(last_day)) {
-        # Four room/time slots per day, but only two can hold over 40 students.
-        if (day_counts[[day]] >= 4L || size > 70L) next
-        if (size > 40L && large_course_counts[[day]] >= 2L) next
         same_day <- which(assigned_day == day)
-        if (length(same_day) > 0L &&
-            any(conflict_matrix[course_index, same_day] > 0L)) next
+        # Four room/time slots per day, but only two can hold over 40 students.
+        if (length(same_day) >= 4L || size > 70L) next
+        if (size > 40L && sum(course_sizes[same_day] > 40L) >= 2L) next
+        # In (d), a shared student rules out the whole day, including afternoon.
+        if (any(conflict_matrix[course_index, same_day] > 0L)) next
 
-        assigned_day[[course_index]] <<- day
-        day_counts[[day]] <<- day_counts[[day]] + 1L
-        if (size > 40L) large_course_counts[[day]] <<- large_course_counts[[day]] + 1L
-        if (search(position + 1L, max(used_days, day))) return(TRUE)
-        if (size > 40L) large_course_counts[[day]] <<- large_course_counts[[day]] - 1L
-        day_counts[[day]] <<- day_counts[[day]] - 1L
-        assigned_day[[course_index]] <<- 0L
+        assigned_day[[course_index]] <- day
+        solution <- search(course_index + 1L, assigned_day)
+        if (!is.null(solution)) return(solution)
+
+        # Each recursive call receives its own vector. Clear this course here
+        # before trying its next day; failed calls leave no other changes behind.
+        assigned_day[[course_index]] <- 0L
       }
-      FALSE
+      NULL
     }
 
-    if (search(1L, 0L)) assigned_day else NULL
+    search(1L, integer(n_courses))
   }
 
   # Trying smaller day limits first makes the first solution a minimum.
@@ -62,40 +67,31 @@ find_q1_initial_session_assignment <- function(conflict_matrix, course_sizes) {
   course_names <- rownames(conflict_matrix)
   course_sizes <- course_sizes[course_names]
   n_courses <- length(course_names)
-  try_session_count <- function(session_count) {
-    assigned_session <- integer(n_courses)
-    session_counts <- integer(session_count)
-    session_large_count <- integer(session_count)
 
-    search <- function(position, used_sessions) {
-      if (position > n_courses) return(TRUE)
-      course_index <- position
+  try_session_count <- function(session_count) {
+    # As in the day search, 0 means unassigned. Here entries refer to periods.
+    search <- function(course_index, assigned_session) {
+      if (course_index > n_courses) return(assigned_session)
       size <- course_sizes[[course_index]]
+      used_sessions <- max(assigned_session)
       last_session <- min(session_count, used_sessions + 1L)
 
       for (session in seq_len(last_session)) {
-        if (session_counts[[session]] >= 2L) next
-        if (size > 70L || (size > 40L && session_large_count[[session]] >= 1L)) next
         same_session <- which(assigned_session == session)
-        if (length(same_session) > 0L &&
-            any(conflict_matrix[course_index, same_session] > 0L)) next
+        # Two rooms can hold at most two courses, and only Venue 2 fits over 40.
+        if (length(same_session) >= 2L || size > 70L) next
+        if (size > 40L && any(course_sizes[same_session] > 40L)) next
+        if (any(conflict_matrix[course_index, same_session] > 0L)) next
 
-        assigned_session[[course_index]] <<- session
-        session_counts[[session]] <<- session_counts[[session]] + 1L
-        if (size > 40L) {
-          session_large_count[[session]] <<- session_large_count[[session]] + 1L
-        }
-        if (search(position + 1L, max(used_sessions, session))) return(TRUE)
-        if (size > 40L) {
-          session_large_count[[session]] <<- session_large_count[[session]] - 1L
-        }
-        session_counts[[session]] <<- session_counts[[session]] - 1L
-        assigned_session[[course_index]] <<- 0L
+        assigned_session[[course_index]] <- session
+        solution <- search(course_index + 1L, assigned_session)
+        if (!is.null(solution)) return(solution)
+        assigned_session[[course_index]] <- 0L
       }
-      FALSE
+      NULL
     }
 
-    if (search(1L, 0L)) assigned_session else NULL
+    search(1L, integer(n_courses))
   }
 
   # A session is one time period, shared by both venues. Try every allowed
@@ -132,6 +128,8 @@ build_q1_initial_timetable <- function(courses, conflict_matrix) {
       }
       venue <- allowed[!allowed %in% venue_used][[1L]]
       venue_used <- c(venue_used, venue)
+      # Integer division groups periods 1/2 into Day 1, 3/4 into Day 2, etc.
+      # Odd periods are mornings; even periods are afternoons.
       day <- (session + 1L) %/% 2L
       period <- if (session %% 2L == 1L) "Morning" else "Afternoon"
       local_slot <- if (period == "Morning") venue else 2L + venue
@@ -174,6 +172,8 @@ assign_q1_venue_slots <- function(courses, day_assignment) {
 
   for (day in seq_len(max(day_assignment))) {
     day_courses <- which(day_assignment == day)
+    # The day search already checked student conflicts and room availability.
+    # Assign rooms now, giving the courses that need Venue 2 first choice.
     course_order <- day_courses[order(-course_sizes[day_courses], course_names[day_courses])]
     occupied <- logical(nrow(slot_table))
     for (course_index in course_order) {
@@ -211,13 +211,15 @@ assign_q1_venue_slots <- function(courses, day_assignment) {
 }
 
 validate_q1_timetable <- function(timetable, conflict_matrix) {
+  # Q1(d) keeps all Q1(c) checks, then adds the restriction on same-day exams.
   validate_q1_initial_timetable(timetable, conflict_matrix)
   for (i in seq_len(nrow(timetable))) {
+    # Compare each pair once; for the first row there are no earlier rows.
     for (j in seq_len(i - 1L)) {
-      a <- timetable$course[[i]]
-      b <- timetable$course[[j]]
+      course_a <- timetable$course[[i]]
+      course_b <- timetable$course[[j]]
       if (timetable$day[[i]] == timetable$day[[j]] &&
-          conflict_matrix[a, b] > 0L) {
+          conflict_matrix[course_a, course_b] > 0L) {
         stop("Timetable places shared students in exams on the same day.",
              call. = FALSE)
       }
@@ -269,12 +271,19 @@ validate_q1_initial_timetable <- function(timetable, conflict_matrix) {
 }
 
 generate_q1_timetable <- function(courses, conflict_matrix) {
+  # Keep course positions aligned with the conflict matrix throughout the search.
   courses <- courses[rownames(conflict_matrix)]
+
+  # Q1(c): minimize periods, then map each period to a day and two venues.
   initial_timetable <- build_q1_initial_timetable(courses, conflict_matrix)
   validate_q1_initial_timetable(initial_timetable$timetable, conflict_matrix)
+
+  # Q1(d): minimize days first, then choose room/time slots within each day.
   assignment <- find_q1_day_assignment(conflict_matrix, lengths(courses))
   timetable <- assign_q1_venue_slots(courses, assignment$day)
   validate_q1_timetable(timetable, conflict_matrix)
+
+  # The original eight room/time slots cover only four periods over two days.
   list(initial_timetable = initial_timetable$timetable,
        initial_minimum_sessions = initial_timetable$minimum_sessions,
        timetable = timetable,
