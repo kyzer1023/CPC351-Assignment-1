@@ -8,6 +8,12 @@ find_q1_day_assignment <- function(conflict_matrix, course_sizes) {
   n_courses <- length(course_names)
 
   try_days <- function(day_limit) {
+    # assigned_day has one entry per course. A value of 0 means unassigned.
+    # For example, c(1, 0, 2) means:
+    #   Course 1 has its exam on Day 1.
+    #   Course 2 has not been assigned a day yet.
+    #   Course 3 has its exam on Day 2.
+    # integer(n_courses) starts every entry at 0, so all courses are unassigned.
     assigned_day <- integer(n_courses)
     day_counts <- integer(day_limit)
     large_course_counts <- integer(day_limit)
